@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Camera, CameraResultType } from '@capacitor/camera';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
-function App() {
+
+function CameraApp() {
+  const [imageUrl, setImageUrl] = useState(null);
+
+  const takePicture = async () => {
+    defineCustomElements(window);
+
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Uri
+      });
+      setImageUrl(image.webPath);
+    } catch (error) {
+      console.error('Failed to take picture:', error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Camera App</h1>
+      <button onClick={takePicture}>Take Picture</button>
+      {imageUrl && (
+        <div>
+          <h2>Preview</h2>
+          <img src={imageUrl} alt="Captured" style={{ maxWidth: '100%' }} />
+        </div>
+      )}
     </div>
   );
 }
 
-export default App;
+export default CameraApp;
